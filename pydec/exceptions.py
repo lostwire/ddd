@@ -1,0 +1,2 @@
+class AggregateNotEmpty(Exception):
+    pass
