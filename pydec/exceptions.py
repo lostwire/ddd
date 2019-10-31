@@ -1,2 +1,5 @@
-class AggregateNotEmpty(Exception):
+class DECException(Exception):
+    pass
+
+class AggregateAlreadyInitialized(DECException):
     pass
