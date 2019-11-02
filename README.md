@@ -1,3 +1,6 @@
-DDD (Domain Driven Design)
+PyCED
 ===
-Aggregates and Events for Event sourced stuff
+
+C | Command Query Responsibility Segregation
+E | Event Sourcing
+D | Domain Driven Design
