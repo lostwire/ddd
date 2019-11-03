@@ -1,6 +1,8 @@
-PYthon
-Command query responsibility segregation
-
+PyCED
 ===
-Aggregates and Events for Event sourced stuff
 
+Python
+
+C | Command Query Responsibility Segregation
+E | Event Sourcing
+D | Domain Driven Design
