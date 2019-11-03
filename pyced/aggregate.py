@@ -2,8 +2,14 @@ import sys
 import functools
 
 class AggregateRoot(dict):
-    def __init__(self, id):
-        self._data = {'id': id, 'version': 0}
+    def __init__(self, id, name=None):
+        self._data = {'id': id, 'version': 0, 'name': name }
+
+    @property
+    def name(self):
+        if self._data['name']:
+            return self._data['name']
+        return self.__class__.__name__
 
     @property
     def id(self):
