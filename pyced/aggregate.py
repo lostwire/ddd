@@ -2,14 +2,18 @@ import sys
 import functools
 
 class AggregateRoot(dict):
-    def __init__(self, id, name=None):
-        self._data = {'id': id, 'version': 0, 'name': name }
+    def __init__(self, id):
+        self._data = {'id': id, 'version': 0}
+
+    @classmethod
+    def get_name(cls):
+        if hasattr(cls, '__aggregate_name__'):
+            return cls.__aggregate_name__
+        return cls.__name__
 
     @property
     def name(self):
-        if self._data['name']:
-            return self._data['name']
-        return self.__class__.__name__
+        return self.get_name()
 
     @property
     def id(self):
@@ -29,11 +33,12 @@ class AggregateRoot(dict):
             'version': self.version + 1,
             'stream': self.id
         }
+        event_name = '.'.join((self.name, event_name))
         raise event(kwargs, headers, event_name)
 
-    def apply(self, events):
-        for event in events:
-            method_name = 'apply_' + event.name
+    async def apply(self, events):
+        async for event in events:
+            method_name = 'apply_' + event.name.split('.')[-1]
             if hasattr(self, method_name):
                 getattr(self, method_name)(event)
             else:
