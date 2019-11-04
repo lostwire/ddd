@@ -24,7 +24,7 @@ class Store(object):
         self._loop = loop
 
     def get_url(self, path):
-        return self._url + path 
+        return self._url + path
 
     async def _post(self, path, *args, **kwargs):
         return await self._http.post(self.get_url(path), *args, **kwargs)
@@ -37,7 +37,10 @@ class Store(object):
         await self._post('/login', data={'id': id})
     async def get_stream(self, id):
         id = str(id)
-        async with self._get('/get_stream/' + id) as resp:
+        print(id)
+        print(self.get_url('/get_stream/'+id))
+        async with await self._get('/get_stream/' + id) as resp:
+            print(await resp.text())
             data = json.loads(await resp.text())
             for entry in data:
                 yield pyced.Event(
@@ -58,8 +61,8 @@ class Store(object):
                 elif msg.type == aiohttp.WSMsgType.ERROR:
                     break
 
-    def blocking_consume(self, callback):
-        self._loop.
+    def consume_sync(self, callback):
+        self._loop.run_until_complete(self.consume(callback))
 
     async def add_event(self, event):
         headers = {
