@@ -1,7 +1,7 @@
 PyCED
 ===
 
-Python\n
-C | Command Query Responsibility Segregation\n
-E | Event Sourcing\n
+Python  
+C | Command Query Responsibility Segregation  
+E | Event Sourcing  
 D | Domain Driven Design
