@@ -8,7 +8,7 @@ import aiohttp.web
 
 import pyced
 
-def init(url, id, loop=None):
+def init(url, loop=None):
     if not loop:
         loop = asyncio.get_event_loop()
     http = aiohttp.ClientSession(loop=loop)
@@ -51,6 +51,7 @@ class Store(object):
     async def consume(self, callback):
         async with self._http.ws_connect(self.get_url('/ws')) as ws:
             async for msg in ws:
+                print(msg)
                 if msg.type == aiohttp.WSMsgType.TEXT:
                     data = json.loads(msg.data)
                     event = pyced.Event(
