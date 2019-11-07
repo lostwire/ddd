@@ -1,8 +1,9 @@
+""" classes for CED stack, CQRS, ES, DDD """
 from setuptools import setup, find_packages
 
 setup(name='pydec',
     version='0.0.1',
-    description='DDD, ES CQRS stack',
+    description=__doc__,
     author='Jin-Xu',
     author_email='jnxy@lostwire.net',
     license='BSD',
