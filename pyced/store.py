@@ -51,11 +51,10 @@ class Store(object):
     async def consume(self, callback):
         async with self._http.ws_connect(self.get_url('/ws')) as ws:
             async for msg in ws:
-                print(msg)
                 if msg.type == aiohttp.WSMsgType.TEXT:
                     data = json.loads(msg.data)
                     event = pyced.Event(
-                        data['body'],
+                        json.loads(data['body']),
                         data['headers'],
                         data['routing_key'])
                     await callback(event)
