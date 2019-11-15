@@ -9,5 +9,23 @@ Installation
 ---
 
     pip install git+https://github.com/lostwire/pyced.git#egg=pyced
+    
+
+Example
+===
 
 
+Defining aggregates
+---
+
+```python
+import pyced
+
+class UserAccount(pyced.AggregateRoot):
+    @pyced.expect_empty
+    def create(self, name):
+        self.throw('Created', name=name)
+    
+    @pyced.unpack_event_data
+    def apply_Created(self, data)
+```
