@@ -13,7 +13,7 @@ setup(name='pydec',
         'asyncio',
         'aiohttp',
         'aio-pika',
-        'aiohttp-session',
         'configparser2',
+        'aiohttp-session',
     ],
     packages=find_packages())
