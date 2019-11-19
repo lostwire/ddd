@@ -27,5 +27,7 @@ class UserAccount(pyced.AggregateRoot):
         self.throw('Created', name=name)
     
     @pyced.unpack_event_data
-    def apply_Created(self, data)
+    def apply_Created(self, name)
+        self['name'] = name
 ```
+
