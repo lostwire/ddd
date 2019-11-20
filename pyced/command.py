@@ -1,3 +1,6 @@
+""" Classes and functions for managing aggregates
+"""
+
 import uuid
 import atexit
 import asyncio
@@ -46,6 +49,8 @@ class Server(object):
         self._store = store
 
     def register(self, aggregate):
+        """ Add aggregate to the pool
+        """
         name = aggregate.get_name()
         self._jar[name] = aggregate
         callback = functools.partial(wrapper, self._store, aggregate)
