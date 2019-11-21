@@ -2,11 +2,14 @@ import json
 import uuid
 import atexit
 import asyncio
+import logging
 
 import aiohttp
 import aiohttp.web
 
 import pyced
+
+logger = logging.getLogger(__name__)
 
 def init(url, loop=None):
     if not loop:
@@ -52,6 +55,7 @@ class Store(object):
         async with self._http.ws_connect(self.get_url('/ws')) as ws:
             async for msg in ws:
                 if msg.type == aiohttp.WSMsgType.TEXT:
+                    logger.info("Message arrived: %s", msg.data)
                     data = json.loads(msg.data)
                     event = pyced.Event(
                         json.loads(data['body']),
