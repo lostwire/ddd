@@ -31,3 +31,13 @@ class UserAccount(pyced.AggregateRoot):
         self['name'] = name
 ```
 
+Instantiating command server
+---
+
+```python
+import pyced
+
+server = pyced.init_command('http://event-store')
+server.register(UserAccount)
+server.run()
+```
