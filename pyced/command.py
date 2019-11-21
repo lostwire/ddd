@@ -4,12 +4,15 @@
 import uuid
 import atexit
 import asyncio
+import logging
 import functools
 
 import aiohttp
 import aiohttp.web
 
 import pyced.store
+
+logger = logging.getLogger(__name__)
 
 def init(store_url, loop=None):
     if not loop:
@@ -26,7 +29,6 @@ async def wrapper(store, aggregate_class, req):
         response.headers['Stream'] = id
     else:
         id = req.headers['id']
-    print(id)
     aggregate = aggregate_class(id)
     stream = store.get_stream(id)
     await aggregate.apply(stream)
@@ -40,7 +42,6 @@ async def wrapper(store, aggregate_class, req):
 
 class Server(object):
     def __init__(self, app, store, loop):
-        self._jar = {}
         self._app = app
         self._loop = loop
         self._store = store
@@ -49,9 +50,9 @@ class Server(object):
         """ Add aggregate to the pool
         """
         name = aggregate.get_name()
-        self._jar[name] = aggregate
         callback = functools.partial(wrapper, self._store, aggregate)
         self._app.router.add_post('/'+name+'/{method}', callback)
+        logger.info("Adding %s to the server", name)
 
     def run(self):
         runner = aiohttp.web.AppRunner(self._app)
