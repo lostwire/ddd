@@ -36,8 +36,8 @@ class Store(object):
     async def register(self, name):
         res = await self._post('/register', data={'name': name})
         return res.text
-    async def login(self, id):
-        await self._post('/login', data={'id': id})
+    async def login(self, name):
+        await self._post('/login', data={'name': name})
     async def get_stream(self, id):
         id = str(id)
         print(id)
