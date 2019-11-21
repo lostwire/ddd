@@ -34,10 +34,7 @@ async def wrapper(store, aggregate_class, req):
     try:
         getattr(aggregate, method)(**data)
     except pyced.aggregate.Event as e:
-        headers = { 'stream': id }
-        if 'Version' in req.headers:
-            headers['version'] = req.headers['version']
-        e.headers.update(headers)
+        e.headers['stream'] = id
         await store.add_event(e)
     return response
 
