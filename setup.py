@@ -10,6 +10,8 @@ setup(name='pydec',
     zip_safe=False,
     include_package_data=True,
     install_requires = [
+        'click',
+        'aiopg',
         'asyncio',
         'aiohttp',
         'aio-pika',
