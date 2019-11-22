@@ -75,6 +75,12 @@ class Snapshot(Event):
 
 class Saga(dict):
     @classmethod
+    def get_name(cls):
+        if hasattr(cls, '__aggregate_name__'):
+            return cls.__aggregate_name__
+        return cls.__name__
+
+    @classmethod
     def started_by(cls):
         output = []
         for member in inspect.getmembers(cls, inspect.isfunction):
@@ -82,6 +88,10 @@ class Saga(dict):
             if function_name.startswith('handle_'):
                 output.append(function_name.split('_', 1)[-1].replace('_','.'))
         return output
+
+    @property
+    def name(self):
+        return self.get_name()
 
     def __call__(self, api, event):
         method_name = 'handle_' + '_'.join(event.name.split('_'))
