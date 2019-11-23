@@ -1,1 +1,1 @@
-from ddd import Saga, Event, Snapshot, AggregateRoot
+from pyced.ddd import Saga, Event, Snapshot, AggregateRoot

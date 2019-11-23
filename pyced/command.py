@@ -10,6 +10,7 @@ import functools
 import aiohttp
 import aiohttp.web
 
+import pyced.ddd
 import pyced.store
 
 logger = logging.getLogger(__name__)
@@ -35,7 +36,7 @@ async def wrapper(store, aggregate_class, req):
     data = await req.post()
     try:
         getattr(aggregate, method)(**data)
-    except pyced.aggregate.Event as e:
+    except pyced.ddd.Event as e:
         e.headers['stream'] = id
         await store.add_event(e)
     return response

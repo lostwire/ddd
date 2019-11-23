@@ -1,9 +1,9 @@
 import json
 import uuid
 import atexit
-import asyncio
 import logging
 
+import asyncio
 import aiohttp
 import aiohttp.web
 
@@ -17,7 +17,6 @@ def init(url, loop=None):
     http = aiohttp.ClientSession(loop=loop)
     atexit.register(loop.run_until_complete, http.close())
     store = Store(url, http, loop)
-    #loop.run_until_complete(store.login(id))
     return store
 
 class Store(object):
@@ -52,6 +51,7 @@ class Store(object):
                     entry['name'])
 
     async def consume(self, callback):
+        logger.info("Starting consumption")
         async with self._http.ws_connect(self.get_url('/ws')) as ws:
             async for msg in ws:
                 if msg.type == aiohttp.WSMsgType.TEXT:
@@ -63,6 +63,7 @@ class Store(object):
                         data['routing_key'])
                     await callback(event)
                 elif msg.type == aiohttp.WSMsgType.ERROR:
+                    logger.warning("HTTP error occurred")
                     break
 
     def consume_sync(self, callback):
