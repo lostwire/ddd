@@ -4,9 +4,11 @@ import functools
 import aiohttp
 import aiohttp.web
 
-def init(url, headers, loop=None):
+def init(url, headers=None, loop=None):
     if not loop:
         loop = asyncio.get_event_loop()
+    if not headers:
+        headers = {}
     http = aiohttp.ClientSession(loop=loop)
     return Api(url, http, headers)
 
@@ -43,7 +45,7 @@ class Api(object):
         return Entity(self, name, functools.partial(get, self), self._headers)
 
     def get_url(self, path):
-        return self._url + path
+        return self._url + "/" + path
     async def post(self, path, *args, **kwargs):
         return await self._http.post(self.get_url(path), *args, **kwargs)
     async def get(self, path, *args, **kwargs):

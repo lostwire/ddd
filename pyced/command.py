@@ -34,6 +34,7 @@ async def wrapper(store, aggregate_class, req):
     stream = store.get_stream(id)
     await aggregate.apply(stream)
     data = await req.post()
+    logger.info("Executing command %s with args %s", method, data)
     try:
         getattr(aggregate, method)(**data)
     except pyced.ddd.Event as e:

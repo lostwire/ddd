@@ -1,6 +1,9 @@
 import sys
 import inspect
+import logging
 import functools
+
+logger = logging.getLogger(__name__)
 
 class AggregateRoot(dict):
     def __init__(self, id):
@@ -93,7 +96,8 @@ class Saga(dict):
     def name(self):
         return self.get_name()
 
-    def __call__(self, api, event):
-        method_name = 'handle_' + '_'.join(event.name.split('_'))
+    async def __call__(self, api, event):
+        method_name = 'handle_' + event.name.replace('.','_')
+        logger.info("calling %s", method_name)
         if hasattr(self, method_name):
-            getattr(self, method_name)(api, event)
+            await getattr(self, method_name)(api, event)

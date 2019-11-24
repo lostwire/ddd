@@ -1,6 +1,8 @@
+import os
+import logging
+
 import aiopg
 import asyncio
-import logging
 import configparser
 
 import pyced.api
@@ -9,13 +11,17 @@ import pyced.saga.model
 
 logger = logging.getLogger(__name__)
 
-def init(config_file, loop=None):
+def init(config_file=None, loop=None):
+    if not config_file:
+        config_file = os.environ.get('CONFIG')
     config = configparser.ConfigParser()
     config.read(config_file)
     loop = asyncio.get_event_loop()
     db = loop.run_until_complete(aiopg.create_pool(loop=loop,**dict(config.items('db'))))
     store = pyced.store.init(config.get('store', 'url'), loop=loop)
-    model = pyced.saga.Model(db)
+    loop.run_until_complete(store.register(config.get('store','username')))
+    loop.run_until_complete(store.login(config.get('store','username')))
+    model = pyced.saga.model.Model(db)
     logger.info("Saga server initialized")
     return Server(loop, model, store, config.get('general', 'api_url'))
 
@@ -37,15 +43,25 @@ class Server(object):
 
     def register(self, saga):
         for event_name in saga.started_by():
-            aggregate,  = event_name.split('.')
+            aggregate, name = event_name.split('.')
             if not aggregate in self._handlers:
-                self._store.subscribe(aggregate)
-            if not event_name in self._handlers:
-                self._handlers[event_name] = []
-            self._handlers[event_name].append(saga)
+                self._handlers[aggregate] = {}
+                self._loop.run_until_complete(self._store.subscribe(aggregate))
+            if not name in self._handlers[aggregate]:
+                self._handlers[aggregate][name] = []
+            self._handlers[aggregate][name].append(saga)
+            logger.info("Registered event handler %s in %s", event_name, aggregate)
 
-    def __call__(self, event):
+    async def __call__(self, event):
         aggregate, name = event.name.split('.')
+    async def on_event(self, event):
+        logger.info("Received event %s", event.name)
+        aggregate, name = event.name.split('.')
+        if aggregate in self._handlers and name in self._handlers[aggregate]:
+            for handler in self._handlers[aggregate][name]:
+                logger.info("Calling method %s at aggregate %s", name, aggregate)
+                handler = handler()
+                await handler(pyced.api.init(self._api_url), event)
 
     def run(self):
-        self._store.consume(self)
+        self._loop.run_until_complete(self._store.consume(self.on_event))
