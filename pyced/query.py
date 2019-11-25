@@ -1,6 +1,9 @@
+import logging
 import functools
 
 import aiohttp.web
+
+logger = logging.getLogger(__name__)
 
 def init(**args):
     return Server(aiohttp.web.Application(), args)
