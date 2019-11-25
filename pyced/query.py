@@ -21,6 +21,8 @@ class Server(object):
 
     def register(self, path, handler):
         self._app.router.add_get(path, functools.partial(json_output, handler))
+        logger.info("Registering handler for %s", path)
 
     def run(self):
+        logger.info("Starting server")
         aiohttp.web.run_app(self._app, **self._args)
