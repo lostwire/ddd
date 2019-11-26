@@ -13,7 +13,11 @@ class Model(object):
 
     async def initialize(self):
         """ Create all required tables """
-        await self.run_queries(pyced.saga.sql.INITIALIZE)
+        await self.run_queries(pyced.saga.sql.INITIALIZE_SAGA)
+
+    async def reinitialize(self):
+        """ Re-create all required tables """
+        await self.run_queries(pyced.saga.sql.REINITIALIZE_SAGA)
 
     async def run_queries(self, queries):
         with (await self._db.cursor()) as cur:
