@@ -34,13 +34,13 @@ class Store(object):
         return await self._http.get(self.get_url(path), *args, **kwargs)
     async def register(self, name):
         res = await self._post('/register', data={'name': name})
+        logger.info("User %s registered", name)
         return res.text
     async def login(self, name):
         await self._post('/login', data={'name': name})
+        logger.info("User %s logged in", name)
     async def get_stream(self, id):
         id = str(id)
-        print(id)
-        print(self.get_url('/get_stream/'+id))
         async with await self._get('/get_stream/' + id) as resp:
             print(await resp.text())
             data = json.loads(await resp.text())
@@ -79,3 +79,4 @@ class Store(object):
 
     async def subscribe(self, pattern):
         await self._post('/subscribe', data={'pattern': pattern+'.#'})
+        logger.info("Pattern %s subscribed to", pattern)
