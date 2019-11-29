@@ -1,9 +1,10 @@
+""" SAGA server files, """
+
 import os
 import logging
 
 import aiopg
 import asyncio
-import configparser
 
 import pyced.api
 import pyced.store
@@ -11,19 +12,15 @@ import pyced.saga.model
 
 logger = logging.getLogger(__name__)
 
-def init(config_file=None, loop=None):
-    if not config_file:
-        config_file = os.environ.get('CONFIG')
-    config = configparser.ConfigParser()
-    config.read(config_file)
+def init(store, db, api_url, loop=None):
     loop = asyncio.get_event_loop()
-    db = loop.run_until_complete(aiopg.create_pool(loop=loop,**dict(config.items('db'))))
-    store = pyced.store.init(config.get('store', 'url'), loop=loop)
-    loop.run_until_complete(store.register(config.get('store','username')))
-    loop.run_until_complete(store.login(config.get('store','username')))
+    db = loop.run_until_complete(aiopg.create_pool(loop=loop, **db))
+    store = pyced.store.init(store['url'], loop=loop)
+    loop.run_until_complete(store['username'])
+    loop.run_until_complete(store['username'])
     model = pyced.saga.model.Model(db)
     logger.info("Saga server initialized")
-    return Server(loop, model, store, config.get('general', 'api_url'))
+    return Server(loop, model, store, api_url)
 
 class Server(object):
     def __init__(self, loop, model, store, api_url):
