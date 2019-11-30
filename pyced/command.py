@@ -1,5 +1,4 @@
-""" Classes and functions for managing aggregates
-"""
+""" Classes and functions for managing aggregates """
 
 import uuid
 import atexit
@@ -23,6 +22,7 @@ def init(store_url, loop=None):
     return Server(app, store, loop)
 
 async def wrapper(store, aggregate_class, req):
+    """ Translates HTTP request into aggregate method call """
     method = req.match_info['method']
     response = aiohttp.web.Response(text='OK')
     if method.startswith('create'):
@@ -43,14 +43,29 @@ async def wrapper(store, aggregate_class, req):
     return response
 
 class Server(object):
+    """ Aggregate registry
+        Example:
+        
+        import pyced.ddd
+        import pyced.command
+        
+        class User(pyced.ddd.AggregateRoot):
+            def create(self, name):
+                self.throw('UserCreated', name=name)
+            def apply_UserCreated(self, name):
+                self['name'] = name
+                
+        server = pyced.command.init()
+        server.register(User)
+        server.run()
+    """
     def __init__(self, app, store, loop):
         self._app = app
         self._loop = loop
         self._store = store
 
     def register(self, aggregate):
-        """ Add aggregate to the pool
-        """
+        """ Add aggregate to the pool """
         name = aggregate.get_name()
         callback = functools.partial(wrapper, self._store, aggregate)
         self._app.router.add_post('/'+name+'/{method}', callback)
