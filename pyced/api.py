@@ -48,11 +48,14 @@ class Api(object):
 
     def get_url(self, path):
         return self._url + "/" + path
+
     def get_results(self, callback):
         output = self._loop.run_until_complete(callback)
         return output
+
     def post(self, path, headers, **params):
         self.get_results(self._http.post(self.get_url(path), data=params, headers=headers))
+
     def get(self, path, headers, **params):
         return self.get_results(self._http.get(self.get_url(path), params=params, headers=headers))
 
@@ -61,17 +64,19 @@ class Synchron(object):
         self._url = url
         self._http = http
         self._headers = headers
+
     def get_url(self, path):
         return self._url + "/" + path
+
     def __getattr__(self, name):
         return Entity(self, name, self.get, self._headers)
+
     def get_results(self, results):
         return results.json()
-        return [{'name':'costam'}]
-        return results
+
     def post(self, path, headers, **params):
         self._http.post(self.get_url(path), data=params, headers=headers)
         return ''
+
     def get(self, path, headers, **params):
         return self.get_results(self._http.get(self.get_url(path), params=params, headers=headers))
-
