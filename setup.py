@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(name='pydec',
-    version='0.0.1',
+    version='0.0.2',
     description=__doc__,
     author='Jin-Xu',
     author_email='jnxy@lostwire.net',
